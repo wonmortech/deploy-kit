@@ -1,0 +1,59 @@
+# Example: deploy a static site with deploy/deploy.sh on manual dispatch.
+#
+# Repository settings required:
+#   secrets.DEPLOY_SSH_KEY      private key for the deploy user (the public key is in its authorized_keys)
+#   secrets.DEPLOY_KNOWN_HOSTS  output of `ssh-keyscan your-server` (pins the host key)
+#   vars.DEPLOY_TARGET          e.g. deploy@your-server
+#   vars.SITE_URL               e.g. https://example.com
+# Replace the build step with your own generator. dist/ must be in .gitignore, because
+# deploy.sh refuses to deploy from a dirty working tree.
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch to deploy"
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - name: Build
+        run: |
+          # Replace with your build, e.g. `npm ci && npm run build`. The output must end up in dist/.
+          test -d dist || { echo "no dist/ directory; add your build command here" >&2; exit 1; }
+
+      - name: SSH setup
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Deploy
+        env:
+          DEPLOY_TARGET: ${{ vars.DEPLOY_TARGET }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          REMOTE_DIR: /srv/sites/example
+          BRANCH: ${{ inputs.ref }}
+          SITE_DIR: dist
+        run: deploy/deploy.sh "$DEPLOY_TARGET"

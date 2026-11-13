@@ -1,0 +1,17 @@
+# Lives in REMOTE_DIR on the server (deploy.sh copies it there).
+#   conf/  -> /etc/caddy   mounted as a directory so a renamed Caddyfile is visible to the container
+#   www/   -> /www         releases/ plus the current symlink; Caddy serves /www/current
+services:
+  site:
+    image: caddy:2-alpine
+    container_name: example-site
+    restart: unless-stopped
+    # Only used when this definition changes and the container is recreated:
+    # open downloads get 15 seconds to finish.
+    stop_grace_period: 15s
+    volumes:
+      - ./conf:/etc/caddy:ro
+      - ./www:/www:ro
+    ports:
+      # Behind a reverse proxy on the same host, remove this and join the proxy's network instead.
+      - "8080:80"
