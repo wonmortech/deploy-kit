@@ -23,7 +23,10 @@ mkdir -p conf www/releases
 
 # 2) Unpack into a directory no request has seen. The name includes the time, so redeploying the
 #    same commit never overwrites the release that is being served.
+#    The same commit deployed twice within one second gets the same name; mv would then move the
+#    site inside the existing release, so stop before anything changes.
 REL="${SHA:0:12}-$(date -u +%Y%m%dT%H%M%SZ)"
+[ ! -e "www/releases/$REL" ] || { echo "www/releases/$REL already exists; deploy again in a second" >&2; exit 1; }
 mv new/site "www/releases/$REL"
 
 # 3) Swap. `ln -sfn` alone is not atomic (unlink + create). Creating a second link and renaming it
