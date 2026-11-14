@@ -1,9 +1,16 @@
 # Changelog
 
 All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
+[Semantic Versioning](https://semver.org/). Releases are git tags `vX.Y.Z` with the same notes on the
+[releases page](https://github.com/wonmortech/deploy-kit/releases).
 
 ## [Unreleased]
+
+## [0.1.0] - 2026-11-14
+
+First tagged version: the zero-downtime static deploy template (release directories, atomic symlink swap,
+validated Caddy config, graceful reload, health check against `/version.txt`, rollback), plus:
 
 ### Added
 
@@ -21,8 +28,3 @@ All notable changes to this project are documented here. The format follows
 ### Security
 
 - The example deploy workflow pins `actions/checkout` to a commit and does not persist credentials.
-
-## Initial version
-
-- Zero-downtime static deploy template: release directories, atomic symlink swap, validated Caddy config,
-  graceful reload, health check against `/version.txt`, rollback.
