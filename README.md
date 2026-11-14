@@ -13,6 +13,7 @@ deploy/
   rollback.sh         runs on the server: point current at an earlier release and reload
   Caddyfile           serves /www/current
   docker-compose.yml  one caddy:2-alpine container
+tests/run.sh          tests for the three scripts (docker, ssh, curl stubbed; no server needed)
 .github/workflows/deploy.yml   example manual-dispatch workflow
 ```
 
@@ -98,6 +99,16 @@ These are the same limits the post lists for the original flow:
 - **The health check is one URL.** It proves the release is served, not that every page works.
 - **A recreate still has a limit.** When `docker-compose.yml` changes, open downloads get `stop_grace_period` (15 s), not unlimited time.
 - **`mv -T` is GNU coreutils.** The server must be Linux (the client side does not need it).
+
+## Testing and contributing
+
+```bash
+shellcheck --severity=style deploy/*.sh tests/*.sh
+bash tests/run.sh
+```
+
+CI runs both on every pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the rules, and
+[SECURITY.md](SECURITY.md) to report a vulnerability privately. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Licence
 

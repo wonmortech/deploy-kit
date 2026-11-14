@@ -40,6 +40,8 @@ printf '%s\n' "$SHA" > "$STAGE/new/site/version.txt"
 cp deploy/Caddyfile deploy/docker-compose.yml deploy/remote.sh deploy/rollback.sh "$STAGE/new/"
 
 # 3) Upload into new/ and let remote.sh do the swap. Nothing live changes before remote.sh validates.
+#    The settings are expanded here on purpose: the server gets the values chosen on this machine.
+# shellcheck disable=SC2029
 tar -czf - -C "$STAGE" new \
   | ssh "$TARGET" "set -e; mkdir -p '$REMOTE_DIR'; cd '$REMOTE_DIR'; rm -rf new
 tar --no-same-owner -xzf -
