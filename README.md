@@ -1,5 +1,7 @@
 # deploy-kit
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/wonmortech/deploy-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/wonmortech/deploy-kit)
+
 A small template for deploying a static site to your own server **without dropping open connections**: release directories, one atomic symlink rename, a validated Caddy config, a graceful `caddy reload`, and a health check against `/version.txt`.
 
 It is a generalised version of the deploy flow described in [Zero-downtime static deploys with Caddy](https://wonmor.io/engineering/zero-downtime-static-deploys/). All hosts, paths and names here are placeholders: `example.com`, `deploy@your-server`, `/srv/sites/example`.
